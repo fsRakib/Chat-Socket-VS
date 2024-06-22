@@ -88,7 +88,7 @@ public class ChatUI extends JFrame {
 
     private void connectToServer() {
         try {
-            socket = new Socket("localhost", 8081); // Replace with your server address and port
+            socket = new Socket("localhost", 8081); 
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -116,6 +116,10 @@ public class ChatUI extends JFrame {
         if (!message.isEmpty()) {
             String selectedUser = userList.getSelectedValue();
             if (selectedUser != null) {
+
+                String fullMessage = "Me: " + message;
+                chatArea.append(fullMessage + "\n");
+
                 out.println("/msg " + selectedUser + " " + message);
                 messageField.setText("");
                 saveMessage(loggedInUser.getUsername(), selectedUser, message);
