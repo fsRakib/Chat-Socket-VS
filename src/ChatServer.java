@@ -1,13 +1,15 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ChatServer {
-    private static final int PORT = 8083;
+    private static final int PORT = 8085;
     private static HashMap<String, PrintWriter> clientWriters = new HashMap<>();
+    private static Set<String> activeUsers = ConcurrentHashMap.newKeySet(); // To track active users
 
     public static void main(String[] args) {
-        System.out.println("Chat server started at PORT: "+ PORT);
+        System.out.println("Chat server started...");
         ServerSocket serverSocket;
         try {
             serverSocket = new ServerSocket(PORT);
@@ -40,6 +42,8 @@ public class ChatServer {
                 username = in.readLine();
                 synchronized (clientWriters) {
                     clientWriters.put(username, out);
+                    activeUsers.add(username);
+                    notifyActiveUsers();
                 }
 
                 String message;
@@ -63,6 +67,8 @@ public class ChatServer {
                 }
                 synchronized (clientWriters) {
                     clientWriters.remove(username);
+                    activeUsers.remove(username);
+                    notifyActiveUsers();
                 }
             }
         }
@@ -74,6 +80,13 @@ public class ChatServer {
             }
             if (writer != null) {
                 writer.println(message);
+            }
+        }
+
+        private void notifyActiveUsers() {
+            String activeUserList = String.join(",", activeUsers);
+            for (PrintWriter writer : clientWriters.values()) {
+                writer.println("/activeusers " + activeUserList);
             }
         }
     }
