@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.text.*;
+import javax.swing.text.html.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,12 +16,13 @@ public class ChatUI extends JFrame {
     private User loggedInUser;
     private JList<String> userList;
     private DefaultListModel<String> userListModel;
-    private JTextArea chatArea;
+    private JTextPane chatArea; 
     private JTextField messageField;
     private JButton sendButton;
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
+    private JLabel loggedInLabel;
 
     // Database credentials
     private static final String DB_URL = "jdbc:mysql://localhost:3306/chatapp2";
@@ -29,7 +32,8 @@ public class ChatUI extends JFrame {
     public ChatUI(User user) {
         this.loggedInUser = user;
 
-        setTitle("Chat Application - Logged in as " + user.getUsername());
+         setTitle("Chat Application - Logged in as " + user.getUsername());
+
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -46,8 +50,9 @@ public class ChatUI extends JFrame {
         panel.add(userListScrollPane, BorderLayout.WEST);
 
         // Initialize chatArea and add to JScrollPane
-        chatArea = new JTextArea();
+        chatArea = new JTextPane(); 
         chatArea.setEditable(false);
+        chatArea.setEditorKit(new HTMLEditorKit()); //change:2
         JScrollPane chatScrollPane = new JScrollPane(chatArea);
         panel.add(chatScrollPane, BorderLayout.CENTER);
 
@@ -58,6 +63,12 @@ public class ChatUI extends JFrame {
         inputPanel.add(messageField, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
         panel.add(inputPanel, BorderLayout.SOUTH);
+
+        // Logged-in user label
+        loggedInLabel = new JLabel("<html><b>Logged in as: " + loggedInUser.getUsername() + "</b></html>");
+        loggedInLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        loggedInLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+        panel.add(loggedInLabel, BorderLayout.NORTH);
 
         add(panel);
 
@@ -100,7 +111,10 @@ public class ChatUI extends JFrame {
                 String message;
                 try {
                     while ((message = in.readLine()) != null) {
-                        chatArea.append(message + "\n");
+                        String[] parts = message.split(": ", 2);
+                        if (parts.length == 2) {
+                            appendMessage(parts[0], parts[1], false); //change:2
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -116,9 +130,7 @@ public class ChatUI extends JFrame {
         if (!message.isEmpty()) {
             String selectedUser = userList.getSelectedValue();
             if (selectedUser != null) {
-
-                String fullMessage = "Me: " + message;
-                chatArea.append(fullMessage + "\n");
+                appendMessage("Me", message, true); //change:2
 
                 out.println("/msg " + selectedUser + " " + message);
                 messageField.setText("");
@@ -126,6 +138,22 @@ public class ChatUI extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "Please select a user to send the message.");
             }
+        }
+    }
+
+    //change:2 - updated method to format and append messages
+    private void appendMessage(String sender, String message, boolean isSent) {
+        String alignment = isSent ? "right" : "left";
+        String formattedMessage = String.format(
+                "<div style='text-align: %s;'><strong>%s:</strong> %s</div>",
+                alignment, sender, message
+        );
+        try {
+            Document doc = chatArea.getDocument();
+            HTMLEditorKit kit = (HTMLEditorKit) chatArea.getEditorKit(); //change:2
+            kit.insertHTML((HTMLDocument) doc, doc.getLength(), formattedMessage, 0, 0, null);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -170,8 +198,9 @@ public class ChatUI extends JFrame {
 
         try {
             conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            String query = "SELECT username FROM users";
+            String query = "SELECT username FROM users WHERE username != ?";
             stmt = conn.prepareStatement(query);
+            stmt.setString(1, loggedInUser.getUsername());
             rs = stmt.executeQuery();
 
             while (rs.next()) {

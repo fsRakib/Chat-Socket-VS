@@ -3,6 +3,13 @@
     "configurations": [
       {
         "type": "java",
+        "name": "ChatUI",
+        "request": "launch",
+        "mainClass": "ChatUI",
+        "projectName": "Socket VS_eeb29c11"
+      },
+      {
+        "type": "java",
         "name": "RegistrationUI",
         "request": "launch",
         "mainClass": "RegistrationUI",
