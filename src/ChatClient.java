@@ -4,7 +4,7 @@ import java.util.concurrent.*;
 
 public class ChatClient {
     private static final String SERVER_ADDRESS = "localhost";
-    private static final int SERVER_PORT = 8081;
+    private static final int SERVER_PORT = 8083;
     private BufferedReader in;
     private PrintWriter out;
     private ExecutorService executor = Executors.newSingleThreadExecutor();

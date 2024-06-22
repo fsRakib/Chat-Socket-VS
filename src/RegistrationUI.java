@@ -23,23 +23,23 @@ public class RegistrationUI extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(6, 2));
 
-        panel.add(new JLabel("Username:"));
+        panel.add(new JLabel(" Username:"));
         usernameField = new JTextField();
         panel.add(usernameField);
 
-        panel.add(new JLabel("Password:"));
+        panel.add(new JLabel(" Password:"));
         passwordField = new JPasswordField();
         panel.add(passwordField);
 
-        panel.add(new JLabel("Name:"));
+        panel.add(new JLabel(" Full Name:"));
         nameField = new JTextField();
         panel.add(nameField);
 
-        panel.add(new JLabel("Phone:"));
+        panel.add(new JLabel(" Phone:"));
         phoneField = new JTextField();
         panel.add(phoneField);
 
-        panel.add(new JLabel("Email:"));
+        panel.add(new JLabel(" Email:"));
         emailField = new JTextField();
         panel.add(emailField);
 

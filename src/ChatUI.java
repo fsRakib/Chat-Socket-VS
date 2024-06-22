@@ -32,7 +32,7 @@ public class ChatUI extends JFrame {
     public ChatUI(User user) {
         this.loggedInUser = user;
 
-         setTitle("Chat Application - Logged in as " + user.getUsername());
+         setTitle("Chat Application - developed by RAKIB " );
 
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -52,7 +52,7 @@ public class ChatUI extends JFrame {
         // Initialize chatArea and add to JScrollPane
         chatArea = new JTextPane(); 
         chatArea.setEditable(false);
-        chatArea.setEditorKit(new HTMLEditorKit()); //change:2
+        chatArea.setEditorKit(new HTMLEditorKit());
         JScrollPane chatScrollPane = new JScrollPane(chatArea);
         panel.add(chatScrollPane, BorderLayout.CENTER);
 
@@ -99,7 +99,7 @@ public class ChatUI extends JFrame {
 
     private void connectToServer() {
         try {
-            socket = new Socket("localhost", 8081); 
+            socket = new Socket("localhost", 8083); 
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 

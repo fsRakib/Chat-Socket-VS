@@ -22,11 +22,11 @@ public class LoginUI extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(3, 2));
 
-        panel.add(new JLabel("Username:"));
+        panel.add(new JLabel(" Username:"));
         usernameField = new JTextField();
         panel.add(usernameField);
 
-        panel.add(new JLabel("Password:"));
+        panel.add(new JLabel(" Password:"));
         passwordField = new JPasswordField();
         panel.add(passwordField);
 

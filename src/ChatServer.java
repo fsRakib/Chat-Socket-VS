@@ -3,11 +3,11 @@ import java.net.*;
 import java.util.*;
 
 public class ChatServer {
-    private static final int PORT = 8081;
+    private static final int PORT = 8083;
     private static HashMap<String, PrintWriter> clientWriters = new HashMap<>();
 
     public static void main(String[] args) {
-        System.out.println("Chat server started...");
+        System.out.println("Chat server started at PORT: "+ PORT);
         ServerSocket serverSocket;
         try {
             serverSocket = new ServerSocket(PORT);
