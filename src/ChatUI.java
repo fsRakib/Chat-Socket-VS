@@ -1,5 +1,5 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
 import java.awt.*;
@@ -54,10 +54,12 @@ public class ChatUI extends JFrame {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
                     boolean cellHasFocus) {
-                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
+                        cellHasFocus);
                 String username = (String) value;
                 if (activeUsers.contains(username)) {
-                    label.setText("<html><span style='color: black;'>" + username + "</span>   <span style='color: green;'>(Active)</span></html>");
+                    label.setText("<html><span style='color: black;'>" + username
+                            + "</span>   <span style='color: green;'>(Active)</span></html>");
                     label.setHorizontalAlignment(SwingConstants.LEFT);
                 } else {
                     label.setText("<html><span style='color: black;'>" + username + "</span></html>");
@@ -123,7 +125,9 @@ public class ChatUI extends JFrame {
         messageField.setPreferredSize(new Dimension(400, 30));
 
         // Logged-in user label
-        loggedInLabel = new JLabel("<html><b>Logged in as: " + loggedInUser.getUsername() + "</b></html>");
+        loggedInLabel = new JLabel("<html><b>Logged in as:  <span style='font-size: 14pt;'>"
+                + loggedInUser.getUsername() + "</span></b></html>");
+
         loggedInLabel.setHorizontalAlignment(SwingConstants.CENTER);
         loggedInLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         loggedInLabel.setPreferredSize(new Dimension(200, 30)); // Adjusted width to match user list
@@ -219,7 +223,7 @@ public class ChatUI extends JFrame {
     private void appendMessage(String sender, String message, boolean isSent) {
         String alignment = isSent ? "right" : "left";
         String formattedMessage = String.format(
-                "<div style='text-align: %s;'><strong>%s:</strong> %s</div>",
+                "<div style='text-align: %s;  font-size: 18pt;'><strong>%s:</strong> %s</div>",
                 alignment, sender, message);
         try {
             Document doc = chatArea.getDocument();
