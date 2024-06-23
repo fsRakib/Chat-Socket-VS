@@ -6,7 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ChatServer {
     private static final int PORT = 8085;
     private static HashMap<String, PrintWriter> clientWriters = new HashMap<>();
-    private static Set<String> activeUsers = ConcurrentHashMap.newKeySet(); // To track active users
+    // To track active users
+    private static Set<String> activeUsers = ConcurrentHashMap.newKeySet();
 
     public static void main(String[] args) {
         System.out.println("Chat server started...");
@@ -22,6 +23,8 @@ public class ChatServer {
         }
     }
 
+    // When a client connects, a new ClientHandler thread is started to handle the
+    // connection.
     private static class ClientHandler extends Thread {
         private Socket socket;
         private String username;
@@ -46,6 +49,7 @@ public class ChatServer {
                     notifyActiveUsers();
                 }
 
+                // server listens for messages from the client
                 String message;
                 while ((message = in.readLine()) != null) {
                     if (message.startsWith("/msg ")) {
@@ -83,6 +87,7 @@ public class ChatServer {
             }
         }
 
+        // sends the updated list of active users to all connected clients
         private void notifyActiveUsers() {
             String activeUserList = String.join(",", activeUsers);
             for (PrintWriter writer : clientWriters.values()) {

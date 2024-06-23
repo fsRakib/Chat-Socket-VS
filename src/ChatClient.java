@@ -10,6 +10,7 @@ public class ChatClient {
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private String username;
 
+    //connects to a chat server
     public ChatClient(String username) {
         this.username = username;
         try {
