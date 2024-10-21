@@ -28,27 +28,49 @@ public class ChatUI extends JFrame {
     private JLabel loggedInLabel;
     private Set<String> activeUsers = new HashSet<>();
 
-    // Database credentials
     private static final String DB_URL = "jdbc:mysql://localhost:3306/chatapp2";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "";
 
+    // Custom colors
+    private static final Color DARK_GREEN = new Color(0, 128, 105);
+    private static final Color LIGHT_GREEN = new Color(37, 211, 102);
+    private static final Color BLUE = new Color(66, 133, 244); // For Load button
+    private static final Color WHITE = Color.WHITE;
+    private static final Color LIGHT_GRAY = new Color(240, 240, 240); // For selected user background
+
     public ChatUI(User user) {
         this.loggedInUser = user;
 
-        setTitle("Chat App - Logged in as " + user.getUsername());
+        try {
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        setSize(600, 400);
+        setTitle("Chat App - Logged in as " + user.getUsername());
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        // Dark green background panel
         JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(DARK_GREEN);
 
-        // Initialize userListModel for JList
+        // User list
+        JLabel userListHeader = new JLabel("Users");
+        userListHeader.setFont(new Font("Arial", Font.BOLD, 16));
+        userListHeader.setForeground(DARK_GREEN); // Text color dark green
+        userListHeader.setHorizontalAlignment(SwingConstants.CENTER);
+        userListHeader.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
+
         userListModel = new DefaultListModel<>();
         userList = new JList<>(userListModel);
+        userList.setFont(new Font("Arial", Font.PLAIN, 14));
+        userList.setBackground(WHITE); // White background for user list panel
+        userList.setForeground(DARK_GREEN); // Text color dark green
 
-        // Set custom cell renderer to change font style and add active status
+        // Cell renderer for user list with custom styling for selected user and online status
         userList.setCellRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
@@ -56,94 +78,108 @@ public class ChatUI extends JFrame {
                 JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
                         cellHasFocus);
                 String username = (String) value;
+                label.setText("<html><span style='color: darkgreen;'>" + username + "</span></html>");
+
                 if (activeUsers.contains(username)) {
-                    label.setText("<html><span style='color: black;'>" + username
-                            + "</span>   <span style='color: green;'>(Online)</span></html>");
-                    label.setHorizontalAlignment(SwingConstants.LEFT);
-                } else {
-                    label.setText("<html><span style='color: black;'>" + username + "</span></html>");
+                    label.setText("<html><span style='color: darkgreen;'>" + username
+                            + "</span> <span style='font-weight: bold; color: green;'>(Online)</span></html>");
                 }
-                label.setFont(label.getFont().deriveFont(Font.BOLD, 14f));
+
+                label.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                label.setFont(new Font("Arial", Font.PLAIN, 14));
+
+                if (isSelected) {
+                    label.setBackground(LIGHT_GRAY); // Light gray for selected user background
+                } else {
+                    label.setBackground(WHITE); // White background for unselected users
+                }
+
                 return label;
             }
         });
 
-        // Add userList to a JScrollPane
         JScrollPane userListScrollPane = new JScrollPane(userList);
         userListScrollPane.setPreferredSize(new Dimension(200, 0));
 
-        // Panel for user list and logged-in label
         JPanel userListPanel = new JPanel(new BorderLayout());
-        JLabel userListLabel = new JLabel("User List", JLabel.CENTER);
-        userListLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        userListPanel.add(userListLabel, BorderLayout.NORTH);
+        userListPanel.add(userListHeader, BorderLayout.NORTH);
         userListPanel.add(userListScrollPane, BorderLayout.CENTER);
 
-        // Add refresh button below the user list
-        refreshButton = new JButton("Refresh");
+        refreshButton = new JButton("Load");
+        refreshButton.setBackground(BLUE); // Blue background for Load button
+        refreshButton.setForeground(WHITE);
+        refreshButton.setFont(new Font("Arial", Font.BOLD, 14)); // Bold font for "Load" text
+
         refreshButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 updateRegisteredUsers();
             }
         });
+
         JPanel refreshButtonPanel = new JPanel(new BorderLayout());
         refreshButtonPanel.add(refreshButton, BorderLayout.SOUTH);
         userListPanel.add(refreshButtonPanel, BorderLayout.SOUTH);
 
         panel.add(userListPanel, BorderLayout.WEST);
 
-        // Initialize chatArea and add to JScrollPane
+        // Chat area setup
         chatArea = new JTextPane();
         chatArea.setEditable(false);
         chatArea.setEditorKit(new HTMLEditorKit());
+        chatArea.setBackground(DARK_GREEN); // Dark green background for chat
+        chatArea.setForeground(WHITE); // White text for chat
         JScrollPane chatScrollPane = new JScrollPane(chatArea);
 
-        // Panel for chat area and label
         JPanel chatPanel = new JPanel(new BorderLayout());
-        JLabel chatLabel = new JLabel("Chat Rooms", JLabel.CENTER);
-        chatLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        JLabel chatLabel = new JLabel("Chat", JLabel.CENTER);
+        chatLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        chatLabel.setForeground(DARK_GREEN); // Dark green text for "Chat"
+        chatLabel.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
         chatPanel.add(chatLabel, BorderLayout.NORTH);
         chatPanel.add(chatScrollPane, BorderLayout.CENTER);
 
         panel.add(chatPanel, BorderLayout.CENTER);
 
-        // Message input and send button
-        JPanel inputPanel = new JPanel(new BorderLayout());
+        // Message input field
         messageField = new JTextField();
+        messageField.setPreferredSize(new Dimension(400, 40));
+        messageField.setBackground(WHITE); // White background for message input
+        messageField.setForeground(DARK_GREEN); // Dark green text color
+
         sendButton = new JButton("Send");
+        sendButton.setBackground(LIGHT_GREEN); // Light green for send button
+        sendButton.setForeground(Color.BLACK); // Bold black text
+        sendButton.setFont(new Font("Arial", Font.BOLD, 14)); // Bold text for send button
 
-        // Create a new panel for messageField and sendButton
-        JPanel messagePanel = new JPanel(new BorderLayout());
-        messagePanel.add(messageField, BorderLayout.CENTER);
-        messagePanel.add(sendButton, BorderLayout.EAST);
+        JPanel inputPanel = new JPanel(new BorderLayout());
+        inputPanel.add(messageField, BorderLayout.CENTER);
+        inputPanel.add(sendButton, BorderLayout.EAST);
 
-        inputPanel.add(messagePanel, BorderLayout.CENTER);
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        // Adjust the size of messageField
-        messageField.setPreferredSize(new Dimension(400, 30));
-
-        // Logged-in user label
-        loggedInLabel = new JLabel("<html><b>Logged user:  <span style='font-size: 14pt;'>"
+        // Logged in label
+        loggedInLabel = new JLabel("<html><b>Logged in as: <span style='font-size: 14pt; color: darkgreen;'>"
                 + loggedInUser.getUsername() + "</span></b></html>");
+        loggedInLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        loggedInLabel.setBackground(WHITE); // White background for the label
+        loggedInLabel.setOpaque(true); // Make the background color visible
+        loggedInLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Set padding for label
 
-        loggedInLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        loggedInLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-        loggedInLabel.setPreferredSize(new Dimension(200, 30)); // Adjusted width to match user list
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setBackground(WHITE); // White background for bottom panel
+        bottomPanel.add(loggedInLabel, BorderLayout.WEST);
+        bottomPanel.add(inputPanel, BorderLayout.CENTER);
 
-        inputPanel.add(loggedInLabel, BorderLayout.WEST);
-
-        panel.add(inputPanel, BorderLayout.SOUTH);
-
+        panel.add(bottomPanel, BorderLayout.SOUTH);
         add(panel);
 
-        // Fetch and display registered users
         updateRegisteredUsers();
 
         // Connect to chat server
         connectToServer();
 
-        // Add action listener to send button
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -151,7 +187,6 @@ public class ChatUI extends JFrame {
             }
         });
 
-        // Add action listener to message field for Enter key
         messageField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -168,10 +203,8 @@ public class ChatUI extends JFrame {
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            // Send logged in username to the server
             out.println(loggedInUser.getUsername());
 
-            // Start a new thread to listen for incoming messages and active users
             new Thread(() -> {
                 String message;
                 try {
@@ -249,7 +282,6 @@ public class ChatUI extends JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // Close JDBC objects in finally block
             try {
                 if (stmt != null)
                     stmt.close();
@@ -289,7 +321,6 @@ public class ChatUI extends JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // Close JDBC objects in finally block
             try {
                 if (rs != null)
                     rs.close();
