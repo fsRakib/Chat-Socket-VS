@@ -36,7 +36,7 @@ public class ChatUI extends JFrame {
     public ChatUI(User user) {
         this.loggedInUser = user;
 
-        setTitle("Chat Application - Logged in as " + user.getUsername());
+        setTitle("Chat App - Logged in as " + user.getUsername());
 
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -58,7 +58,7 @@ public class ChatUI extends JFrame {
                 String username = (String) value;
                 if (activeUsers.contains(username)) {
                     label.setText("<html><span style='color: black;'>" + username
-                            + "</span>   <span style='color: green;'>(Active)</span></html>");
+                            + "</span>   <span style='color: green;'>(Online)</span></html>");
                     label.setHorizontalAlignment(SwingConstants.LEFT);
                 } else {
                     label.setText("<html><span style='color: black;'>" + username + "</span></html>");
@@ -74,7 +74,7 @@ public class ChatUI extends JFrame {
 
         // Panel for user list and logged-in label
         JPanel userListPanel = new JPanel(new BorderLayout());
-        JLabel userListLabel = new JLabel("All Users", JLabel.CENTER);
+        JLabel userListLabel = new JLabel("User List", JLabel.CENTER);
         userListLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         userListPanel.add(userListLabel, BorderLayout.NORTH);
         userListPanel.add(userListScrollPane, BorderLayout.CENTER);
@@ -101,7 +101,7 @@ public class ChatUI extends JFrame {
 
         // Panel for chat area and label
         JPanel chatPanel = new JPanel(new BorderLayout());
-        JLabel chatLabel = new JLabel("Messages", JLabel.CENTER);
+        JLabel chatLabel = new JLabel("Chat Rooms", JLabel.CENTER);
         chatLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         chatPanel.add(chatLabel, BorderLayout.NORTH);
         chatPanel.add(chatScrollPane, BorderLayout.CENTER);
@@ -124,7 +124,7 @@ public class ChatUI extends JFrame {
         messageField.setPreferredSize(new Dimension(400, 30));
 
         // Logged-in user label
-        loggedInLabel = new JLabel("<html><b>Logged in as:  <span style='font-size: 14pt;'>"
+        loggedInLabel = new JLabel("<html><b>Logged user:  <span style='font-size: 14pt;'>"
                 + loggedInUser.getUsername() + "</span></b></html>");
 
         loggedInLabel.setHorizontalAlignment(SwingConstants.CENTER);
